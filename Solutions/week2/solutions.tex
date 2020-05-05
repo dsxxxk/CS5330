@@ -1,0 +1,111 @@
+\documentclass{article}
+\usepackage{geometry}
+\usepackage{amsmath}
+\usepackage{color}
+\usepackage{xcolor}
+\definecolor{keywordcolor}{rgb}{0.8,0.1,0.5}
+\usepackage{listings}
+\usepackage{xcolor}
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+\lstset{ %
+backgroundcolor=\color{white},      % choose the background color
+basicstyle=\footnotesize\ttfamily,  % size of fonts used for the code
+columns=fullflexible,
+tabsize=4,
+breaklines=true,               % automatic line breaking only at whitespace
+captionpos=b,                  % sets the caption-position to bottom
+commentstyle=\color{mygreen},  % comment style
+escapeinside={\%*}{*)},        % if you want to add LaTeX within your code
+keywordstyle=\color{blue},     % keyword style
+stringstyle=\color{mymauve}\ttfamily,  % string literal style
+frame=single,
+rulesepcolor=\color{red!20!green!20!blue!20},
+% identifierstyle=\color{red},
+language=c++,
+}
+\lstset{breaklines}
+\lstset{extendedchars=false}
+
+\author{Bao Jinge}
+\title{Solutions for Week 2}
+\date{}
+
+\begin{document}
+	\maketitle
+	\section{}
+	(a) As the definition of a treap in Lecture 1, which treap perseves max-heap, $D_{ij}=0$ under conditions.\\
+	(b) As the definition of a treap in Lecture 1, which treap perseves max-heap, $D_{ij}=0$ under conditions.\\
+	(c) As the definition of a treap in Lecture 1, which treap perseves max-heap, $D_{ij}=1$ under conditions.\\
+	(d) As we can see, the depth of node i is equal to the number of ancestor of node i. If we define a matrix to descripe the $D_{ij}$, we can find that the number of ancestors of node i is the sum of i-th row except for i-th element of row i(beacause a node can't be his own ancestor).
+	So $$E(D_i)=\sum_{j\not=i}{E(D_{ij})}$$
+	As what we found in above questions, iff $x_j$ has the highest priority among ${x_i,...,x_j}$(when $j>i$) or ${x_i,...,x_j}$(when $j<i$) that $D_{ij}=1$.
+	So 
+	\begin{equation}
+	\begin{aligned}
+		E(D_i)&=\sum_{j\not=i}{E(D_{ij})} \\
+		&=\sum_{1\leq j<i}{E(D_{ij})}+\sum_{i< j \leq n}{E(D_{ij})} \\
+		&=\sum_{1\leq j<i}{E(D_{ij})}{\frac{1}{i-j+1}}+\sum_{i< j \leq n}{\frac{1}{j-i+1}} \\
+		&=\sum_{1\leq j\leq i}{E(D_{ij})}{\frac{1}{i-j+1}}+\sum_{i \leq j \leq n}{\frac{1}{j-i+1}} - 2 \\
+		&=H(i)+H(n-i+1)-2 \\
+		&=O(\ln{n})
+	\end{aligned}
+	\end{equation} 
+	where H(i) is harmonic number that $H(n)=\sum_{k=1}^{n}{\frac{1}{k}}$.
+	So $E(D_i)=H(i)+H(n-i+1)-2$
+
+
+	\section{}
+	Suppose $Pr(k)$ denotes that person k finds that his seat has been occupied on his turn. Obviously, we can find that when $k=2$, 
+	$$Pr(k)=\frac{1}{n-1}$$.
+	When $k>2$, it might be one of last $k-1$ person occupies his seat. Thus
+	$$Pr(k)=\frac{1}{n}+\sum^{k-1}_{i=2}{Pr(i)\frac{1}{n-i+1}}=\frac{1}{n+2-k}$$
+	Suppose $X_i$ denotes whether i-th person's seat was occupied by others or not. 
+	When $X_i=1$, his seat was occupied by others, otherwise $X_i=0$.
+	So the expecation of people not sitting on their own seat is
+	$$E(X)=E(\sum_{i=1}^{n}{X_i})=\sum_{i=1}^{n}{E(X_i)}$$
+	As above, we know that when $i \geq 2$, $Pr(k)=\frac{1}{n+2-k}$. 
+	Here we get $$E(X_i)=1 \cdot Pr(i)+0 \cdot (1-Pr(i))$$
+	Thus, 
+	$$E(x)=\sum_{i=1}^{n}{E(X_i)}=\sum_{i=1}^{n-1}{1/i}=H(n-1)$$
+	where H(n) denotes Harmonic number.
+
+	\section{}
+	(a) Let $X_{n,k}$ dontes the number of increasing subsequences of the $\pi$ that have length of k. Noting that this is equal to the sum, over all $\tbinom{n}{k}$ subsequences of the length k, of the probability for the subsequence to be increasing, where $1 \leq k \leq n$. We can get
+	$$E(X_{n,k})=\frac{1}{k!}\tbinom{n}{k}$$
+	Thus $$Pr(L(\pi)\geq k)=Pr(X_{n,k}\geq1)\leq E(X_{n,k})=\frac{1}{k!}\tbinom{n}{k}\leq\frac{n^k}{(\frac{k}{e})^{2k}}$$
+	As hint gives, we got
+	$$E(L(\pi))=\sum_{k\geq0}{Pr(L(\pi)\geq k)}=\sum_{k\geq0}^{n}{Pr(L(\pi)\geq k)}\leq\sum_{k\geq0}^{n}\frac{n^k}{(\frac{k}{e})^{2k}}$$
+	here we fixing some $\delta > 1$ and taking $k=\lceil{\delta e\sqrt{n}}\rceil$
+	we have 
+	$$Pr(L(\pi)\geq k)\leq(\frac{1}{\delta})^{2k}\leq(\frac{1}{\delta})^{2\delta e \sqrt{n}}$$
+	And then
+	$$E(L(\pi))\leq\sum_{k\geq0}^{n}\frac{n^k}{(\frac{k}{e})^{2k}} \leq \sum_{k\geq0}^{n}(\frac{1}{\delta})^{2\delta e \sqrt{n}} \leq \delta e \sqrt{n}$$
+	So $E(L(\pi))=O(\sqrt{n})$\\
+	(b) As hint gives, when n is a perfect square we can find that $[1,2,3,...,n]$ can be divided as $\sqrt{n}$ intervals of length $\sqrt{n}$. By the same way, we can divided a pertutation $\pi$ into $\sqrt{n}$ continuous parts. Here we have
+	$$L(\pi) \geq \sum_{i=1}^{\sqrt{n}}{X_i}$$
+	\begin{equation}
+	\begin{aligned}
+		E(L(\pi)) &\geq E(\sum_{i=1}^{\sqrt{n}}{X_i}) \\ 
+		&= \sum_{i=1}^{\sqrt{n}}{E(X_i)} \\
+		&= \sum_{i=1}^{\sqrt{n}}{\sqrt{n} * \frac{1}{\sqrt{n}}} \\
+		&= \sqrt{n} \\
+	\end{aligned}
+	\end{equation}
+	When $n$ is not a perfect square, there must be a $n_0<n$ which is a perfect square and $\lfloor \sqrt{n} \rfloor_0 = \sqrt{n_0}$.
+	And we got
+	\begin{equation}
+	\begin{aligned}
+		E(L(\pi)) &\geq E(\sum_{i=1}^{\sqrt{n_0}}{X_i}) \\ 
+		&= \sum_{i=1}^{\sqrt{n_0}}{E(X_i)} \\
+		&= \sum_{i=1}^{\sqrt{n_0}}{\sqrt{n_0} \cdot \frac{1}{\sqrt{n_0}}} \\
+		&= \sqrt{n_0} \\
+		&= \lfloor \sqrt{n} \rfloor \\
+	\end{aligned}
+	\end{equation}
+	So we got $E(L(\pi))=\Omega(\sqrt{n})$. \\
+
+	To sum up results from (a) and (b), we got $E(L(\pi))=\Theta(\sqrt{n})$
+
+\end{document}

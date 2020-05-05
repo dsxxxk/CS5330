@@ -1,0 +1,121 @@
+ \documentclass{article}
+\usepackage{geometry}
+\usepackage{amsmath}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\definecolor{keywordcolor}{rgb}{0.8,0.1,0.5}
+\usepackage{listings}
+\usepackage{xcolor}
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+\lstset{ %
+backgroundcolor=\color{white},      % choose the background color
+basicstyle=\footnotesize\ttfamily,  % size of fonts used for the code
+columns=fullflexible,
+tabsize=4,
+breaklines=true,               % automaatic line breaking only at whitespace
+captionpos=b,                  % sets the caption-position to bottom
+commentstyle=\color{mygreen},  % comment style
+escapeinside={\%*}{*)},        % if you want to add LaTeX within your code
+keywordstyle=\color{blue},     % keyword style
+stringstyle=\color{mymauve}\ttfamily,  % string literal style
+frame=single,
+rulesepcolor=\color{red!20!green!20!blue!20},
+% identifierstyle=\color{red},
+language=c++,
+}
+\lstset{breaklines}
+\lstset{extendedchars=false}
+
+\author{Bao Jinge A0214306U e0522065@u.nus.edu}
+\title{Solutions for Week 10}
+\date{}
+
+\begin{document}
+	\maketitle
+	\section{}
+	Here we constrcut a coupling $(X, Y)$ that, with probability $1/2$, we move $X_{t-1}=x$ to $X_{t}=(x+e^j)$ or $X_{t}=(x-e^j)$ for every $j \in [d]$ each with probability $\frac{1}{2d}$, and get $Y_{t} = Y_{t-1}$.\\
+	Or with probability $1/2$, we move $Y_{t-1}=y$ to $Y_{t}=(y+e^j)$ or $Y_{t}=(y-e^j)$ for every $j \in [d]$ each with probability $\frac{1}{2d}$, and get $X_{t} = X_{t-1}$.\\
+	Let $d_t=\sum_{i=1}^d|X_t^d-Y_t^d|$, obviously, $d_t$ will inscrease by 1 with probability $1/2$ and decrease by 1 with probability $1/2$. The $d_t$'s running is like a random walk on a circle with $nd$ vertices.
+	What we wanna know, it's the expecation of steps to reach $d_t=0$ and $d_t=nd$.
+	Let $A$ denotes the event that $d_T=0$ or $d_T=nd$ and $T$ denote the steps to be coupled.
+	As what we get on random walk on a circle, the expecation 
+	$$
+	\mathbb{E}[A] = \Theta(n^2d^2)
+	$$
+	From Markov's Inequality, let
+	$$
+	Pr[t>T] \leq \frac{\mathbb{E}[t]}{T}= \epsilon
+	$$
+	Thus 
+	$$
+	t_{mix}(\epsilon) = T = O(\frac{n^2d^2}{\epsilon})
+	$$
+
+	\section{}
+	We can regard the lazy random walk on the cycle as a special case of the lazy walk on $\mathbb{Z}^d_n$ when $d=1$.
+	From the result above, as for the lazy random walk on the $\mathbb{Z}^d_n$, the mixing time is
+	$$
+	t_{mix}(c) = O(\frac{d^2n^2}{c})
+	$$
+	If we let $c<1/2$, and let $T=\frac{kn^2d^2}{c}$, which $k>0$ is a big enough constant.
+	Then using the Theorem 12.6, we get new uppor bound for mixing time
+	$$
+	t_{mix}(\epsilon) \leq \lceil\frac{\ln(\epsilon)}{\ln(2c)}\rceil T= \lceil\frac{\ln(\epsilon)}{\ln(2c)}\rceil\frac{kn^2d^2}{c}= \lfloor\frac{-\ln(\epsilon)}{-\ln(2c)}\rfloor\frac{kn^2d^2}{c} = \lfloor\frac{\ln(1/\epsilon)}{\ln(1/(2c))}\rfloor\frac{kn^2d^2}{c}
+	$$
+	As for $c\ln(2c) \leq -\frac{1}{2}e^{-1} < 0$ when $0 < c < \frac{1}{2}$ and $\ln(\epsilon) < 0$.Thus
+	$$
+	t_{mix}(\epsilon)=O(n^2d^2\ln(\frac{1}{\epsilon}))
+	$$
+	Obviously, when $d=1$,
+	$$
+	t_{mix}(\epsilon)=O(n^2\ln(\frac{1}{\epsilon}))
+	$$
+	is the mixing time for the lazy walk on the cycle.
+
+
+	\section{}
+	To argue that $|\Omega(b_i)| \leq (n+1)|\Omega(b_i)|$, we prove as follows.
+	Because $b_i=\sum_{j=1}^{i}a_j$ and $b_{i-1}=\sum_{j=1}^{i-1}a_j$, obviously $b_i>b_{i-1}$. Thus,
+	$$
+	\Omega(b_{i-1}) \subset \Omega(b_i)
+	$$
+	Now, we focus on the $\Omega(b_i)/\Omega(b_{i-1})$.
+	For each $x \in \Omega(b_i)/\Omega(b_{i-1})$, which means $x \in \Omega(b_i)$ and $x \notin \Omega(b_{i-1})$. From definition, we know
+	$$
+	\begin{aligned}
+	\sum_{j=1}^{n}x_ja_j &> b_{i-1}=\sum_{j=1}^{i-1}a_j\\
+	\sum_{j=1}^{n}x_ja_j &\leq b_{i}=\sum_{j=1}^{i}a_j\\
+	\end{aligned}
+	$$
+	Because of the $b_{i-1}$ is the maximun of picking all items for $a_1$ to $a_{i-1}$.
+	Since $a_k>a_i$ when $k>i$, there must be some $x_k=1$, where $k \geq i$. If we let $x_k=0$ and name the new vector $x'$, then
+	$$
+	\sum_{j=1}^{n}x_j'a_j=\sum_{j=1}^{n}x_ja_j-a_k \leq b_i-a_k \leq b_i-a_i \leq b_{i-1}
+	$$
+	Thus $x' \in \Omega(b_{i-1})$ now. Which means every $x \in \Omega(b_{i})$ can be filp any one of the coordinate which $x_k=1$ and $k \geq i$, then the new vector $x' \in \Omega(b_{i-1})$. And there are $(n-i+1)$ coordinates might be chosen.
+	Consequently,
+	$$
+	\frac{\Omega(b_{i-1})}{\Omega(b_{i})} \geq \frac{1}{n-i+1} \geq \frac{1}{n+1}
+	$$
+	which will hold for each $i \in [k+1]$.\\
+	Now we successful prove that $|\Omega(b_{i})| \leq (n+1)|\Omega(b_{i-1})|$.
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

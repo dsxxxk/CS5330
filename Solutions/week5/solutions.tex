@@ -1,0 +1,118 @@
+ \documentclass{article}
+\usepackage{geometry}
+\usepackage{amsmath}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\definecolor{keywordcolor}{rgb}{0.8,0.1,0.5}
+\usepackage{listings}
+\usepackage{xcolor}
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+\lstset{ %
+backgroundcolor=\color{white},      % choose the background color
+basicstyle=\footnotesize\ttfamily,  % size of fonts used for the code
+columns=fullflexible,
+tabsize=4,
+breaklines=true,               % automatic line breaking only at whitespace
+captionpos=b,                  % sets the caption-position to bottom
+commentstyle=\color{mygreen},  % comment style
+escapeinside={\%*}{*)},        % if you want to add LaTeX within your code
+keywordstyle=\color{blue},     % keyword style
+stringstyle=\color{mymauve}\ttfamily,  % string literal style
+frame=single,
+rulesepcolor=\color{red!20!green!20!blue!20},
+% identifierstyle=\color{red},
+language=c++,
+}
+\lstset{breaklines}
+\lstset{extendedchars=false}
+
+\author{Bao Jinge (E0522065)}
+\title{Solutions for Week 5}
+\date{}
+
+\begin{document}
+	\maketitle
+	\section{}
+	Supposing we have m vectors in set of $\epsilon$-orthogonal unit vectors.
+	When $\epsilon \geq 1$, all vectors in $V$ will be included in set of $\epsilon$-orthogonal unit vectors and $m=2^d$.\\
+	When $\epsilon = 0$, we could get $m=d$ or $m=0$ when d is even or odd.\\
+	When $\epsilon < 0$, obviously, $m=0$.\\
+	Now we discuss the situation when $0 < \epsilon < 1$.
+	Suppose we fix a vector $u$ and then select a vector $v$ randomly in set V, whose coordinates are $u_k$ and $v_k$, which $k \in [d]$.\\
+	We have
+	$$\mathbb{E}[u_kv_k]=u_k\mathbb{E}[v_k]=0$$
+	Let $X_{ij}$ denotes the inner product of $v^i$ and $v^j$, when we fix $v^i$. So $$-\frac{v_k^i}{\sqrt{d}} \leq v_k^j \leq \frac{v_k^i}{\sqrt{d}}$$
+	Using Hoeffding Bound, we get
+	$$Pr(\left|X_{ij}\right|>\epsilon) = Pr(|\sum_{k=1}^{d}v^i_kv^j_k-0|>\epsilon)\leq 2e^{-\frac{2\epsilon^2}{\sum_{k=1}^{d}(2\frac{v_i^k}{\sqrt{d}})^2}} = 2e^{-\frac{d\epsilon^2}{2}}$$
+	Then we use Union bound for all pairs of vector in set of pairwise $\epsilon$-orthogonal unit vectors. Then we got
+	$$Pr(\sum_{i=1}^{m}\sum_{j=i+1}^{m}(|X_{ij}|>\epsilon))<= \sum_{i=1}^{m}\sum_{j=i+1}^{m}Pr(|X_{ij}|>\epsilon) <= \binom{m}{2}2e^{-\frac{d\epsilon^2}{2}}$$
+	Let 
+	$$\binom{m}{2}2e^{-\frac{d\epsilon^2}{2}} \leq m^2e^{-\frac{d\epsilon^2}{2}} \leq \frac{1}{m^c}$$
+	which $c>0$. We got
+	$$m \leq e^{\frac{d\epsilon^2}{2(c+2)}}$$
+	So the cardinality of $\epsilon$-orthogonal set i can construct is 
+	$$m = 
+	\begin{cases}
+	0& \epsilon < 0\\
+	0& \epsilon = 0, \text{d is odd}\\
+	d& \epsilon = 0, \text{d is even}\\
+	e^{\frac{d\epsilon^2}{2(c+2)}}& 0 < \epsilon < 1\\
+	2^d& \epsilon \geq 1\\
+	\end{cases}
+	$$
+	\section{}
+
+	    
+	\section{}
+	Suppose the running time of randomized quicksort is $T$.
+	Without loss of generality, we focus on an element $z$.\\
+	With randomized quicksort can be viewed as a recursion tree, we could know that $T \leq hn$ if the depth of recursion tree is $h$.\\
+	Focus on one element $z$.
+	Let $S$ denotes each node in recursion tree.
+	As for randomization, we define balanced partition that partition step divides $S$ such that 
+	$$\frac{|S|}{4} \leq |S_{l}|$$
+	and
+	$$|S_r| \leq \frac{3|S|}{4}$$
+	At root of the tree, $|S_{root}|=n$.\\
+	Here we will prove that among the $c\ln{n}$ partitioning steps, at least $\frac{c}{4}\ln{n}$ results in balanced paritions for any element $z$.
+	For any element $z$, after $\frac{c}{4}\ln{n}$ balanced partitions, $z$ will end into a partition with size of $n(\frac{3}{4})^{\frac{c}{4}\ln{n}}$.\\
+	Let size of partition $n(\frac{3}{4})^{\frac{c}{4}\ln{n}} \leq 1$.
+	We could get $c \geq 14$, which means that any element $z$ will end up in its leaf of recursion tree after $\frac{c}{4}\ln{n}$ balanced partitions when $c \geq 14$.\\
+	Let $X_i$ indecates $z$ is in balanced partition in level i, we could easily get
+	$$Pr(X_i=1) = \frac{\frac{3k}{4} - \frac{k}{4}}{k} = \frac{1}{2}$$
+	Because $X_i$ are mutually independent, let $X=\sum_{i=1}^{c\ln{n}}X_i$ and $\mu=\mathbb{E}[X]=\frac{c\ln{n}}{2}$. Using Chernoff Bound, we get
+	$$
+	\begin{aligned}
+	Pr(X \leq \frac{c}{4}\ln{n}) &\leq Pr(X-\frac{c}{2}\ln{n}<-\frac{c}{4}\ln{n}) 
+	&\leq e^{-\frac{c}{16}{ln{n}}}
+	&=\frac{1}{n^\frac{c}{16}}
+	\end{aligned}
+	$$
+	Let $c=32$, we have 
+	$$Pr(X \leq 8\ln{n}) \leq \frac{1}{n^2}$$
+	which means that element $z$ can't reach its final leaf of recursion tree after $32\ln{n}$ levels with probability $\leq \frac{1}{n^2}$.\\
+	Using Union Bound, at least one of n input elements can't reach its final leaf of recursion tree after $32\ln{n}$ levels with probability $\leq \frac{1}{n}$.\\
+	Thus, after $32\ln{n}$ levels of recursions, all element will reach its final leaf with probability $\geq 1- \frac{1}{n}$, namely with high probability\\
+	With there are $O(n)$ comparisons for each level.
+	So Randomized Quicksort will terminate after $32n\ln{n}$ with high probability.\\
+	In other way, RQS runs in time $O(n\log{n})$ with high probability.
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

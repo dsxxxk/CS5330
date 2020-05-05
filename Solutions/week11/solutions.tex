@@ -1,0 +1,210 @@
+ \documentclass{article}
+\usepackage{geometry}
+\usepackage{amsmath}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\definecolor{keywordcolor}{rgb}{0.8,0.1,0.5}
+\usepackage{listings}
+\usepackage{xcolor}
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+\lstset{ %
+backgroundcolor=\color{white},      % choose the background color
+basicstyle=\footnotesize\ttfamily,  % size of fonts used for the code
+columns=fullflexible,
+tabsize=4,
+breaklines=true,               % automaatic line breaking only at whitespace
+captionpos=b,                  % sets the caption-position to bottom
+commentstyle=\color{mygreen},  % comment style
+escapeinside={\%*}{*)},        % if you want to add LaTeX within your code
+keywordstyle=\color{blue},     % keyword style
+stringstyle=\color{mymauve}\ttfamily,  % string literal style
+frame=single,
+rulesepcolor=\color{red!20!green!20!blue!20},
+% identifierstyle=\color{red},
+language=c++,
+}
+\lstset{breaklines}
+\lstset{extendedchars=false}
+
+\author{Bao Jinge A0214306U e0522065@u.nus.edu}
+\title{Solutions for Week 11}
+\date{}
+
+\begin{document}
+	\maketitle
+	\section{}
+
+	\subsection{}
+	Because this problem has "self-reducibility" property, we can solve it using FPRAS. Suppose $M_0$,$M_1$,...$M_n$ is the satisfying assignments that when we fix the first bit equal to either 0 or 1. Without loss of generality, we assume that we fix them all to 0 (If the fraction of 1 for each bit is larger than $\frac{1}{2}$, we set it to 1 for that bit). Then we can use equations as follows
+	$$
+	\#\phi = M_0 = \frac{M_0}{M_1}\frac{M_1}{M_2}...\frac{M_{n-1}}{M_n}M_n
+	$$
+	Obviously, $M_n=1$. Suppose that $q_i=\frac{M_i}{M_{i-1}} > \frac{1}{2}$, we can get
+	$$
+	\#\phi = M_0 = \frac{1}{q_1}\frac{1}{q_2}...\frac{1}{q_n}
+	$$
+	As we can see, the $N_0$ in the problem is
+	$$
+	N_0 = \frac{1}{q_2}...\frac{1}{q_n}
+	$$
+	and $p$ in the problem is $q_1$.
+	So we need to get $N_0$ recursively. And get $p=q_1$ using approximate counting.\\
+	With Chernoff Bound, to $(\epsilon / n, \delta / n)$ approximate counting, we should set sample size $m$
+	$$
+	m = \frac{6n^2\ln{(2n/\delta)}}{\epsilon^2}
+	$$
+	Here we use the assumption that $\mu \geq \frac{1}{2}$.
+
+	The algorithm to compute each $q_i$ is as follows.
+
+	\begin{algorithm}
+	\caption{FPRAS for Computing Ratio $q_i$ with $(\delta /n,\epsilon /n)$}
+	\label{alg:A}
+	\begin{algorithmic}
+	\REQUIRE Satisfying assignments fixed the first $i-1$ bits to $0$
+	\ENSURE The Ratio $q_i$
+	\STATE $m = \frac{6n^2\ln{2/\delta}}{\epsilon^2}$
+	\STATE $C_i = 0$
+	\STATE $C_{i-1} =0$
+	\FOR {$i=1$ to $m$}
+	\STATE Sample $x$ from satisfying assignments fixed the first $i-1$ bits to $0$
+		\STATE $C_{i-1} = C_{i-1} + 1$
+		\IF {the $i$-th bit of $x$ is also $0$}
+		\STATE $C_{i} = C_{i} + 1$
+		\ENDIF 
+	\ENDFOR
+	\STATE $q_i = C_{i}/C_{i-1}$
+	\RETURN $q_i$
+	\end{algorithmic}
+	\end{algorithm}
+	Using each $q_i$ and equations above, we can get approximate counting for number of $\#\phi$.
+
+	\subsection{}
+	We can efficiently generate uniform samples as follows:
+	Suppose we have $\phi_k(x)=(X_1,X_2,X_3,...,X_k=x,...,X_n)$, which the $k$ bit is fixed by $x$.
+	For each bit of this uniform sample, we can determine it using equation
+	$$
+	X_k =
+	\begin{cases}
+	1 &\text{w.p.} \frac{{\#}\phi_k(1)}{\text{\#}\phi}\\
+	0 &\text{w,p.} \frac{{\#}\phi_k(0)}{\text{\#}\phi}\\
+	\end{cases}
+	$$
+	which $\phi_k(1)$ and $\phi_k(0)$ can be computed by black box C.
+
+	\section{}
+	\subsection{}
+	Proof:
+	When we fix $Z=z$, then $\mathbb{E}[X|Y,Z]$ is a random variable on $Y$.
+	$$
+	\begin{aligned}
+	\mathbb{E}[\mathbb{E}[X|Y,Z]|Z=z]&=\sum_{y}\mathbb{E}[X|Y=y,Z=z]Pr[Y=y|Z=z]\\
+	&=\sum_{y}\sum_{x}xPr[X=x|Y=y,Z=z]Pr[Y=y|Z=z]\\
+	&=\sum_{y}\sum_{x}x\frac{Pr[X=x,Y=y,Z=z]}{Pr[Y=y,Z=z]}\frac{Pr[Y=y,Z=z]}{Pr[Z=z]}\\
+	&=\sum_{y}\sum_{x}x\frac{Pr[X=x,Y=y,Z=z]}{Pr[Z=z]}\\
+	&=\sum_{x}x\frac{Pr[X=x,Z=z]}{Pr[Z=z]}\\
+	&=\sum_{x}xPr[X=x|Z=z]\\
+	&=\mathbb{E}[X|Z=z]
+	\end{aligned}
+	$$
+	Since $\mathbb{E}[\mathbb[X|Y,Z]|Z]$ is random variable on $Y$,
+	$$
+	\begin{aligned}
+	\mathbb{E}[\mathbb[X|Y,Z]|Z]&=\sum_{z}\mathbb{E}[\mathbb{E}[X|Y,Z]|Z=z]\\
+	&=\sum_{z}\mathbb{E}[X|Z=z]\\
+	&=\mathbb{E}[X|Z]\\
+	\end{aligned}
+	$$
+	Q.E.D.
+
+	\subsection{}
+	We prove these lemma in turn.
+	Proof:
+	When $y$ is a constant,
+	$$
+	\begin{aligned}
+	\mathbb{E}[XY|Y=y]&=\mathbb{E}[yX|Y=y]\\
+	&=y\mathbb{E}[X|Y=y]
+	\end{aligned}
+	$$
+	From the definiton of condational expectation, we egt
+	$$
+	\mathbb{E}[XY|Y]=Y\mathbb{E}[X|Y]
+	$$
+	Take expecation on both sides,
+	$$
+	\begin{aligned}
+	\mathbb{E}[XY]&=\mathbb{E}[\mathbb{E}[XY|Y]]\\
+	&=\mathbb{E}[Y\mathbb{E}[X|Y]]
+	\end{aligned}
+	$$
+	Q.E.D.
+
+	\section{}
+	\subsection{}
+	Let $X_i$ indicate whether vectex $i$ is a isolated vertex. Thus $X=\sum_{i=1}^nX_i$. For each edge, there are $\binom{n}{2}$ options. For each vertex, there are at most $(n-1)$ degree. So
+	$$
+	Pr[deg(v_i)=0]=(1-\frac{\binom{n}{2}-(n-1)}{\binom{n}{2}})^N=(1-\frac{n-2}{n})^{cn}
+	$$
+	With linearity of expectation,
+	$$
+	\begin{aligned}
+	\mathbb{E}[X] &= \mathbb{E}[\sum_{i=1}^{n}X_i]\\
+	& = \sum_{i=1}^{n}\mathbb{E}[X_i]\\
+	& = n (1-\frac{n-2}{n})^{cn}\\
+	& = n(\frac{2}{n})^{cn}\\
+	\end{aligned}
+	$$
+
+	\subsection{}
+	As we can see, $X$ is a function of edges $E_1,E_2,...E_{cn}$
+	Now we define doob edge explosure martingale, for every $i \in [0,cn]$
+	$$
+	Z_i=\mathbb{E}[X|E_1,...,E_i]
+	$$
+	Obviously, $Z_0=\mathbb{E}[X]$ and $Z_{cn}=X$.
+	Now we prove that ${Z}_{i=0}^n$ is a martingale w.r.t $(X_i)$.
+	$$
+	\begin{aligned}
+	\mathbb{E}[Z_i|E_1,..,E_{i-1}] &= \mathbb{E}[\mathbb{E}[X|E_1,...,E_i]|E_1,...,E_{i-1}]\\
+	&= \mathbb{E}[X|E_1,...,E_{i-1}]\\
+	&= Z_{i-1}
+	\end{aligned}
+	$$
+	The first equality is the definition of $Z_i$, the second from the fact in section 2.1, and the last from the definition of $Z_{i-1}$. Now we can use Azuma to this doob martingale.
+	For each $E_i$, it will decrease the isolated vertices at most 2 or increase isolated vertices at most 2, which means
+	$$
+	|Z_{i}-Z_{i-1}| \leq 2
+	$$
+	With Azume-Hoeffding's inequality,
+	$$
+	\begin{aligned}
+	Pr[|Z_n-Z_0|\geq 2\lambda\sqrt{cn}] &\leq 2e^{-\frac{(2\lambda\sqrt{cn})^2}{2cn * 2^2}}\\
+	&= 2e^{-\frac{4\lambda^2cn}{8cn}}\\
+	&= 2e^{-\frac{\lambda^2}{2}}\\
+	\end{aligned}
+	$$
+	Q.E.D.
+
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

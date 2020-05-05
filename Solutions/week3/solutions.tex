@@ -1,0 +1,164 @@
+\documentclass{article}
+\usepackage{geometry}
+\usepackage{amsmath}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{amssymb}
+\definecolor{keywordcolor}{rgb}{0.8,0.1,0.5}
+\usepackage{listings}
+\usepackage{xcolor}
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+\lstset{ %
+backgroundcolor=\color{white},      % choose the background color
+basicstyle=\footnotesize\ttfamily,  % size of fonts used for the code
+columns=fullflexible,
+tabsize=4,
+breaklines=true,               % automatic line breaking only at whitespace
+captionpos=b,                  % sets the caption-position to bottom
+commentstyle=\color{mygreen},  % comment style
+escapeinside={\%*}{*)},        % if you want to add LaTeX within your code
+keywordstyle=\color{blue},     % keyword style
+stringstyle=\color{mymauve}\ttfamily,  % string literal style
+frame=single,
+rulesepcolor=\color{red!20!green!20!blue!20},
+% identifierstyle=\color{red},
+language=c++,
+}
+\lstset{breaklines}
+\lstset{extendedchars=false}
+
+\author{Bao Jinge}
+\title{Solutions for Week 3}
+\date{}
+
+\begin{document}
+	\maketitle
+	\section{}
+
+
+	\section{}
+	Calculate the probability of m balls into n disctinct bins. Let $p'$ be a collection of probability of m bins selected randomly from n bins. 
+	$$p' = \{p'_1, p'_2,...,p'_m\} \subsetneqq \{p_1, p_2, p_3,...,p_n\}$$
+	$$\binom{n}{m}\prod_{j=1}^{m}{p'_j} < \frac{1}{2}$$
+	According to Inequality of Arithmetic and Geometric means,
+	we got 
+	$$\binom{n}{m}\prod_{j=1}^{m}{p'_j} \leq \binom{n}{m}{(\frac{\sum_{j=0}^{m}{p'_j}}{m})^m}$$
+	when all $p'_j$ are same, inequality above becomes equanlity.
+	As for any randomized selections, inequations above must be true and we must get maximum, there must be that $p'_j$ always the same whatever selections we choose. And we have $\sum_{i=1}^{n}p_i = 1$
+	So when $p'_j = p_i = \frac{1}{n}$, we got maximun
+	\begin{equation}
+	\begin{aligned}
+	\binom{n}{m}\prod_{j=1}^{m}{p'_j} &\leq \binom{n}{m}{(\frac{\sum_{j=0}^{m}{p'_j}}{m})^m}\\
+		&\leq \binom{n}{m}{(\frac{\sum_{j=0}^{m}{\frac{1}{n}}}{m})^m}\\
+		&= \binom{n}{m}(\frac{1}{n})^m\\
+		&= \prod_{i=1}^{m-1}(1-\frac{i}{n})\\
+		&\leq \prod_{i=1}^{m-1}e^{-\frac{i}{n}}\\
+		&= e^{-\frac{m(m-1)}{2n}}
+	<\frac{1}{2}
+	\end{aligned}
+	\end{equation}
+	here we use the inequality $e^x \geq 1+x$.
+	We got what we want
+	$$m = \lceil \frac{1}{2}+\frac{1}{2}\sqrt{1+8n\ln{2}} \rceil$$
+	So m above is the smallest m for which i can say that there would be at least one bin with at least 2 balls with probability $>\frac{1}{2}$
+
+	\section{}
+	Let $X_n$ denote the number of comparisons needs in sorting n elements. $Pr_n(X=k)$ denotes the probility for $X_n=k$.
+	Use methods of Generating Functions, we suppose
+	$$G_n(x)=\sum_{k}{Pr_n(X=k)x^k}$$
+	As conditions, we have
+	$$G_n(1)=\sum_{k}{Pr_n(X=k)}=1$$
+	So
+	$$E(X_n)=G'_n(1)$$
+	If we choose one pivot from arrays, we divided the array into 2 sub-arrays. Thus
+	$$G_n(x)=\frac{1}{n}x^{n-1}\sum_{j=1}^{n}G_{n-j}(x)G_{j-1}(x)$$
+	Differentiating both sides of definition of $G_n(x)$ and differentiating again, we got
+	\begin{equation}
+	\begin{aligned}
+		G_n'(x)&=\frac{1}{n}(n-1)x^{n-2}\sum_{j=1}^{n}G_{j-1}(x)G_{n-j}(x)\\
+			&+\frac{1}{n}x^{n-1}\sum_{j=1}^{n}G'_{j-1}(x)G_{n-j}(x)\\
+			&+\frac{1}{n}x^{n-1}\sum_{j=1}^{n}G_{j-1}(x)G'_{n-j}(x)\\
+	\end{aligned}
+	\end{equation}
+
+	\begin{equation}
+	\begin{aligned}
+	G_n''(x)&=\frac{(n-1)(n-2)}{n}x^{n-3}\sum_{j=1}^{n}G_{j-1}G_{n-j}\\
+			&+\frac{n-1}{n}x^{n-2}\sum_{j=1}^{n}G'_{j-1}(x)G_{n-j}(x)\\
+			&+\frac{n-1}{n}x^{n-2}\sum_{j=1}^{n}G_{j-1}(x)G'_{n-j}(x)\\
+			&+\frac{n-1}{n}x^{n-2}\sum_{j=1}^{n}G'_{j-1}(x)G_{n-j}(x)\\
+			&+\frac{1}{n}x^{n-1}\sum_{j=1}^{n}G''_{j-1}(x)G_{n-j}(x)\\
+			&+\frac{1}{n}x^{n-2}\sum_{j=1}^{n}G'_{j-1}(x)G'_{n-j}(x)\\
+			&+\frac{n-1}{n}x^{n-2}\sum_{j=1}^{n}G_{j-1}(x)G'_{n-j}(x)\\
+			&+\frac{1}{n}x^{n-2}\sum_{j=1}^{n}G'_{j-1}(x)G'_{n-j}(x)\\
+			&+\frac{1}{n}x^{n-2}\sum_{j=1}^{n}G_{j-1}(x)G''_{n-j}(x)\\
+	\end{aligned}
+	\end{equation}
+	We know that
+	$$E(X_n)=G'_n(1)=M_n$$
+	and
+	$$G''_n(1)=(n-1)(n-2)+\frac{2}{n}(n-1)\sum_{j=1}^{n}M_{j-1}+\frac{2}{n}(n-1)\sum_{j-1}^{n}M_{n-j}
+		+\frac{1}{n}\sum_{j=1}^{n}(G''_{j-1}(1)+G''_{n-j}(1))+\frac{2}{n}\sum_{j=1}^{n}M_{j-1}M_{n-j}$$
+	Accoring to six preportities about Harmonic number,
+	\begin{equation}
+	\begin{aligned}
+	\sum_{i=1}^n{H_i}&=(n+1)H_n-n\\
+	\end{aligned}
+	\end{equation}
+	\begin{equation}
+	\begin{aligned}
+	\sum_{i=1}^{n}iH_{i-1}&=\frac{n(n+1)H_{n+1}}{2}-\frac{n(n+5)}{4}\\
+	\end{aligned}
+	\end{equation}
+	\begin{equation}
+	\begin{aligned}
+	\sum_{i=1}^{n}i^2H_{i-1}&=\frac{6n(n+1)(2n+1)H_{n+1}-n(n+1)(4n+23)}{36}\\
+	\end{aligned}
+	\end{equation}
+	\begin{equation}
+	\begin{aligned}
+	\sum_{i-1}^{n}i(n-i+1)H_{n-i}&=\frac{6nH_{n+1}(n^2+3n+2)-5n^3-27n^2-22n}{36}\\
+	\end{aligned}
+	\end{equation}	
+	\begin{equation}
+	\begin{aligned}
+	\sum_{i=1}^{n}H_iH_{n+1-i}&=(n+2)(H^2_{n+1}-H_{n+1}^{(2)})-2(n+1)(H_{n+1}-1)\\
+	\end{aligned}
+	\end{equation}
+	\begin{equation}
+	\begin{aligned}
+	H_{n+1}^{2}-H_{n+1}^{(2)}&=2\sum_{i=1}^{n}\frac{H_j}{j+1}
+	\end{aligned}
+	\end{equation}
+	which, $H_n^{(2)}=\sum_{i=1}^{n}\frac{1}{i^2}$
+	With equation(4)-(9)We got
+	$$g''_n(1)=4(n+1)^2H_n^2-(16n+4)(n+1)H_n+\frac{2n(23n+17)}{2}-4(n+1)^2H_n^{(2)}$$
+	Thus
+	\begin{equation}
+	\begin{aligned}
+	Var(X_n)&=g''_n(1)+g'_n(1)-(g'_n(1))^2\\
+		&=-4(n+1)^2H_n^{(2)}+7n^2-2(n+2)H_n+13n
+	\end{aligned}
+	\end{equation}
+	As we know properity about $H_n^{(2)}$
+	$$\lim_{n \to \infty}H_n^{(2)} = \frac{\pi^2}{6}$$
+	So the variance of randomized quick sort is 
+	$$Var(X_n)=O(n^2)$$
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,251 @@
+ \documentclass{article}
+\usepackage{geometry}
+\usepackage{amsmath}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\definecolor{keywordcolor}{rgb}{0.8,0.1,0.5}
+\usepackage{listings}
+\usepackage{xcolor}
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+\lstset{ %
+backgroundcolor=\color{white},      % choose the background color
+basicstyle=\footnotesize\ttfamily,  % size of fonts used for the code
+columns=fullflexible,
+tabsize=4,
+breaklines=true,               % automatic line breaking only at whitespace
+captionpos=b,                  % sets the caption-position to bottom
+commentstyle=\color{mygreen},  % comment style
+escapeinside={\%*}{*)},        % if you want to add LaTeX within your code
+keywordstyle=\color{blue},     % keyword style
+stringstyle=\color{mymauve}\ttfamily,  % string literal style
+frame=single,
+rulesepcolor=\color{red!20!green!20!blue!20},
+% identifierstyle=\color{red},
+language=c++,
+}
+\lstset{breaklines}
+\lstset{extendedchars=false}
+
+\author{Bao Jinge A0214306U e0522065@u.nus.edu}
+\title{Solutions for Week 89}
+\date{}
+
+\begin{document}
+	\maketitle
+	\section{}
+	\subsection{a}
+	According to the definition, led $V_{jt}$ indicate whether $X_t=j$ or not with $X_0=1$. Thus,
+	$$
+	V_j = \sum_{0 \leq t < T_1}V_{jt}
+	$$
+	Using the linearity of expectation, we get
+	$$
+	\begin{aligned}
+	v_j &= \mathbb{E}[V_j]= \mathbb{E}[\sum_{0 \leq t < T_1}V_{jt}]\\
+		&= \sum_{0 \leq t < T_1}\mathbb{E}[V_{jt}]\\
+		&= \sum_{0 \leq t < T_1}Pr[X_t=j, X_0=1]\\
+		&= \sum_{0 \leq t < T_1}Pr[X_t=j| X_0=1] Pr[X_0=1]\\
+		&= \sum_{t \geq 0}Pr[X_t=j, t < T_1|X_0=1]\\
+	\end{aligned}
+	$$
+	\subsection{b}
+	$$
+	\begin{aligned}
+	v_j &= \sum_{t \geq 0}Pr[X_t=j,t<T_1|X_0=1]\\
+		&= \sum_{t \geq 1}Pr[X_t=j,t\leq T_1|X_0=1]\\
+		&= \sum_{i}Pr_{i,j}\sum_{t \geq 1}Pr[X_t-1=i,t\leq T_1|X_0=1]\\
+		&= \sum_{t \geq 1}Pr[X_t=j,t\leq T_1|X_0=1]\\
+		&= \sum_{i}Pr_{i,j}\sum_{t \geq 1}Pr[X_t-1=i,t\leq T_1|X_0=1]\\
+		&= \sum_{i}Pr_{i,j}v_i\\
+	\end{aligned}
+	$$
+	The first row comes from result from section (a).\\
+	The second row and the forth row use the property of summation notation and memoryless property of Markov Chain, which replace $t$ using $t-1$ and replace $t-1$ using $t$ separately.\\
+	The third row comes from transition of Markov Chain' definition.\\
+	The last row comes from the definition of $v_i$.\\
+	From derivation above, we know that the $v_j$'s are proportional to a stationary distribution according to definition of stationary distributiion.\\
+	\subsection{c}
+	Because of $X_0$ is distributed accoring to $\pi$,
+	$$
+	\pi_i=Pr[X_0=i]
+	$$
+	According to the definition of $h_i$ and the fact of expecation, we get
+	$$
+	\begin{aligned}
+	\pi_ih_i &= Pr[X_0=i]\sum_{t \geq 1}Pr[T_i \geq t]\\
+			 &= \sum_{t \geq 1}Pr[X_0=i]Pr[T_i \geq t]\\
+			 &= \sum_{t \geq 1}Pr[X_0=i, X_s \neq i, \forall 1 \leq s < t]\\
+	\end{aligned}
+	$$
+	The last row comes from the definition of $T_i$, which means if $X_0=i$ and $X_{T_i}=i$, then no element between $X_0$ and $X_{T_i}$ wii be equal to $i$. Otherwise, it will contradict to definition of $T_i$.
+	\subsection{d}
+	From result derived from section (c), we get
+	$$
+	\begin{aligned}
+	\pi_ih_i &= \sum_{t \geq 1}Pr[X_0=i, X_s \neq i, \forall 1 \leq s < t]\\
+			 &= Pr[X_0=i, X_s \neq i, \forall 1 \leq s < 1] + \sum_{t \geq 2}Pr[X_0=i, X_s \neq i, \forall 1 \leq s < t]\\
+			 &= Pr[X_0=i] + \sum_{t \geq 2}Pr[X_0=i, X_s \neq i, \forall 1 \leq s < t]\\
+			 &= \pi_i + \sum_{t \geq 2}Pr[X_0=i, X_s \neq i, \forall 1 \leq s < t]\\
+			 &= \pi_i + \sum_{t \geq 2}Pr[X_s \neq i, \forall 1 \leq s < t]-Pr[X_s \neq i, \forall 0 \leq s < t]\\
+			 &= \pi_i + \sum_{t \geq 2}Pr[X_s \neq i, \forall 0 \leq s < t-1]-Pr[X_s \neq i, \forall 0 \leq s < t]\\
+	\end{aligned}
+	$$
+	The last row use the memoryless property of Markov Chain.
+	\subsection{e}
+	Because $X$ is irreducible and its state space is finite, so this markov chain is ergodic, whicn means every state will be traversed in the future, namely $p_{i,j}^n>0$. Thus,
+	$$
+	\lim_{t \to \infty}[X_t \neq i, \forall t \geq 0] = 0
+	$$
+	Thus,
+	$$
+	\pi_i h_i = 1
+	$$
+	Q.E.D.
+
+	\section{}
+	The number of rounds required is about 14.\\
+	Code is written in C++, as follows
+	\begin{lstlisting}
+	long long total_round = 0;
+	int times = 1000000;
+	int Ntimes= 1000000;
+	while (times--) {
+		srand(time(NULL));
+		int round = 0;
+		memset(q, false , sizeof(q));
+		q[0] = true;
+		int cnt = 1;
+		while (cnt < NNodes) {
+			for (int i = 0; i < NNodes; i++) {
+				p[i] = rand() % NNodes;
+				while (p[i] == i) p[i] = rand() % NNodes;
+			}
+			int tmp_q[200];
+			for (int i = 0; i < NNodes; i++) {
+				tmp_q[i] = q[i];
+			}
+
+			for (int i = 0; i < NNodes; i++) {
+				if (tmp_q[i]) {
+					if (!q[p[i]]) cnt++;
+					q[p[i]] = q[p[i]] + true;
+				}
+			}
+			round++;
+//			cout << "round = " << round << ", cnt = " << cnt <<endl; 
+		}
+		cout << round << endl;
+		total_round = total_round + round;
+	}
+
+	cout << total_round << endl;
+	cout << "# of avg_round = " << total_round * 1.0 / Ntimes << endl;
+	\end{lstlisting}
+
+
+	\section{}
+	\subsection{i}
+	We partition the lolipop graph into two parts. One for clique $G_{loli}=\{V_{loli}, E_{loli}\}$ and a line graph $G_{line}$ with $(n/2)$ vertices.
+	Let $C_{v}$ denote the expected covering time of a random walk starting at $v$ and $C_{loli}$ denote the expected covering time of $G_{loli}$, we can build cover time like this
+	$$
+	C_{v} = h_{v,u} + C_{loli}
+	$$
+	For the line graph, caculating $h_{v,u}$ can be ragarded as the analysis in 2-SAT Problem. So we can safely get
+	$$
+	h_{v,u} = (\frac{n}{2})^2
+	$$
+	For $G_{loli}$, we have upper bound that
+	$$
+	C_{loli} \leq \sum_{w \in V, w \neq u}h_{u,w} + h_{w,u}
+	$$
+	Without loss of generality, suppose $h_{u,w^*}$ is the larget hitting time from $u$ to other vertice in the $G_{loli}$, where $w^* \in V$ and $w^* \neq u$. 
+	Let other $(n/2-2)$ nodes are contracted into a composition vertice $w'$.
+	Let $x_1,x_2,...x_{n/2}$ denote the vetices on the line starting from the closet vetice to $u$. 
+	We get system of equations below,
+	$$
+	\begin{cases}
+	h_{u, w^*} &= \frac{1}{n/2}h_{x1, w^*} + \frac{n/2-1}{n/2}h_{w', w^*}+\frac{1}{n/2} \cdot 0 + 1\\
+	h_{w',w^*} &= \frac{n/2-1-2}{n/2-1}h_{w',w'} + \frac{1}{n/2-1}h_{u,w^*} + \frac{1}{n/2-1} \cdot 0 + 1\\
+	h_{x_1, w^*} &= \frac{1}{2}h_{u,w^*}+\frac{1}{2}h_{x_2,w^*}+1\\
+	h_{x_2, w^*} &= \frac{1}{2}h_{x1,w^*}+\frac{1}{2}h_{x_3,w^*}+1\\
+	...\\
+	h_{x_{n/2-1}, w^*} &= \frac{1}{2}h_{x_{n/2-2},w^*}+\frac{1}{2}h_{x_{n/2},w^*}+1\\
+	h_{x_{n/2}, w^*} &= h_{x_{n/2-1},w^*}+1\\	
+	\end{cases}
+	$$
+	As we can see, there are $(\frac{n}{2}+2)$ variables and $(\frac{n}{2}+2)$ equations. We have an unique solution that
+	$$
+	h_{u, w^*} = \frac{n^2+18n-8}{4n}
+	$$
+	As for $h_{u,u}$, 
+	$$
+	h_{u,u}=\frac{2|E|}{deg(u)}=\frac{1}{deg(u)}\sum_{w \in V_{loli}, w \neq u}(1+h_{w,u})
+	$$
+	Thus, we get
+	$$
+	\sum_{w \in V_{loli}, w \neq u} h_{w,u} = 2|E|-\frac{n}{2}=\frac{n^2}{2}-\frac{n}{2}
+	$$
+	Consequently, we have upper bound below
+	$$
+	C_{loli} \leq \sum_{w \in V_{loli}, w \neq u}h_{u,w}+h_{w,u} \leq \frac{5n^3+12n^2-44n+16}{8n} = O(n^2)
+	$$
+	Now, we bound the $C_u$,
+	$$
+	\begin{aligned}
+	C_v &\geq h_{u,v} = (\frac{n}{2})^2 = \Omega(n^2)\\
+	C_v &\leq O(n^2)
+	\end{aligned}
+	$$
+	So,
+	$$
+	C_v = \Theta(n^2)
+	$$
+	Q.E.D.
+
+	\subsection{ii}
+	Let $C_{u}$ denote the expected covering time of a random walk starting at $u$, we can know
+	$$
+	C_u = \max\{C_{loli},h_{u,v}\}
+	$$
+	Suppose $W$ denote the set of vertices in lolipop except $u$.
+	$$
+	\begin{cases}
+	h_{u,v} &= \frac{n/2-1}{n/2}h_{W,v}+\frac{1}{n/2}h_{x_1,v}+1\\
+	h_{W,v} &= \frac{n/2-2}{n/2-1}h_{W,v}+\frac{1}{n/2-1}h_{u,v}+1\\
+	h_{x_1,v} &= \frac{1}{2}h_{u,v}+\frac{1}{2}h_{x_2,v}+1\\
+	h_{x_2,v} &= \frac{1}{2}h_{x_1,v}+\frac{1}{2}h_{x_3,v}+1\\
+	...\\
+	h_{x_{n/2-1},v} &= \frac{1}{2}h_{u,v}+\frac{1}{2} \cdot 0 + 1\\
+	\end{cases}
+	$$
+	Here are $n+1$ equations and $n+1$ variables, so we have an unique solution. We can get
+	$$
+	h_{u,v}=\frac{n^3}{8}=\Theta(n^3).
+	$$
+	We can get bound that
+	$$
+	C_{u} = \max \{\Theta(n^2), \Theta(n^3)\}=\Theta(n^3)
+	$$
+	Q.E.D.
+
+
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
